@@ -1,0 +1,12 @@
+--hepsine--
+install-package Entityframework
+install-package Microsoft.aspnet.Identity.core
+install-package Microsoft.aspnet.Identity.EntityFramework			//	asp.net entityframework yapýsý uygulanýyor
+install-package Newtonsoft.Json										//	Json için gerekli.
+install-package Microsoft.aspnet.Identity.Owin						//	Güvenlik amaçlý kuruldu.
+--sadece UI--
+install-package Microsoft.Owin
+install-package Microsoft.Owin.Security
+install-package Microsoft.Owin.Security.Cookies
+install-package Microsoft.Owin.Security.OAuth
+install-package Microsoft.Owin.Host.SystemWeb
