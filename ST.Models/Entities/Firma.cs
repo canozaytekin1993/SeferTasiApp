@@ -44,6 +44,12 @@ namespace ST.Models.Entities
 
         public string KullaniciId { get; set; }
 
+        public decimal MinimumSiparisTutari { get; set; } = 0;
+
+        public string FirmaProFilFotoPath { get; set; }
+
+        public string FirmaKapakFotoPath { get; set; }
+
         //  Navigation Properties
         [ForeignKey("KullaniciId")]
         public virtual ApplicationUser Kullanicisi { get; set; }
