@@ -1,0 +1,10 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/_LayoutPage.cshtml";
+}
+
+<h2>Index</h2>
+
+@HttpContext.Current.User.Identity.GetUserName()
+@HttpContext.Current.User.Identity.IsAuthenticated

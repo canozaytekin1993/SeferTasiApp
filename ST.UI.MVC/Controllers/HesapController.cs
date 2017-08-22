@@ -1,9 +1,11 @@
 ﻿using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using System.Web;
 using ST.Models.ViewModels;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
+using Microsoft.Owin.Security;
 using ST.BLL.Account;
 using ST.Models.IdentityModels;
 using static ST.BLL.Account.MembershipTools;
@@ -14,14 +16,14 @@ namespace ST.UI.MVC.Controllers
     {
         // GET: Hesap
         [HttpGet]
-        public ActionResult Kayıt()
+        public ActionResult Kayit()
         {
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Kayıt(RegisterViewModel model)
+        public async Task<ActionResult> Kayit(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -67,7 +69,7 @@ namespace ST.UI.MVC.Controllers
                         userManager.AddToRole(user.Id, "Musteri");
                 }
 
-                return  RedirectToAction("Index","Ana")
+                return RedirectToAction("Index", "Ana");
             }
             else
             {
@@ -84,10 +86,51 @@ namespace ST.UI.MVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Giris(LoginViewModel model)
+        public async Task<ActionResult> GirisAsync(LoginViewModel model)
         {
+            if (!ModelState.IsValid)
+                return View(model);
 
-            return View();
+            var userManager = NewUserManager();
+            var user = await userManager.FindAsync(model.NameEmail, model.Password);
+            if (user == null)
+            {
+                var emailuser = await userManager.FindByEmailAsync(model.NameEmail);
+                if (emailuser == null)
+                {
+                    
+                }
+                user = await userManager.FindAsync(emailuser.UserName, model.Password);
+                if (user == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Kullanıcı adı veya şifre hatalı");
+                    return View(model);
+                }
+            }
+            else
+            {
+                //  kullanıcı adına göre giriş yaptı.
+                login(user);
+            }
+
+            async void login(ApplicationUser loginUser)
+            {
+                var authManager = HttpContext.GetOwinContext().Authentication;
+                var userIdentity =
+                    await userManager.CreateIdentityAsync(loginUser, DefaultAuthenticationTypes.ApplicationCookie);
+
+                authManager.SignIn(new AuthenticationProperties()
+                {
+                    IsPersistent = model.RememberMe
+                }, userIdentity);
+            }
+            return RedirectToAction("Index", "Ana");
+        }
+        [Authorize]
+        public ActionResult Cikis()
+        {
+            HttpContext.GetOwinContext().Authentication.SignOut();
+            return RedirectToAction("Index", "Ana");
         }
     }
 }
